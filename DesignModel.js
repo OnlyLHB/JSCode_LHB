@@ -271,3 +271,8 @@ var fn =function (name) {
 };
 apply(fn,{name:'sven'},[1,2,3]);
 
+var add=function (a,b) {
+    console.log(a+b);
+};
+
+Function.prototype.apply.apply(add,[this,[1,2]]);
