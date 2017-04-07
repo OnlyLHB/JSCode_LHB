@@ -253,7 +253,21 @@ Function.prototype.uncurrying=function () {
 var push=Array.prototype.push.uncurrying();
 
 (function () {
-    push(arguments,4);
+    push(arguments,4,5);
     console.log(arguments);
 })(1,2,3);
+
+
+var call =Function.prototype.call.uncurrying();
+var fn =function (name) {
+    console.log(name);
+};
+call(fn,this,'sven');
+
+var apply=Function.prototype.apply.uncurrying();
+var fn =function (name) {
+    console.log(this.name);
+    console.log(arguments);
+};
+apply(fn,{name:'sven'},[1,2,3]);
 
