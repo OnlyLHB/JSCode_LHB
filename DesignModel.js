@@ -242,6 +242,7 @@ cost(200);
 
 console.log(cost());
  */
+/*Function.prototype.apply.apply
 Function.prototype.uncurrying=function () {
     var self=this;
     return function () {
@@ -270,9 +271,100 @@ var fn =function (name) {
     console.log(arguments);
 };
 apply(fn,{name:'sven'},[1,2,3]);
-
-var add=function (a,b) {
-    console.log(a+b);
+    */
+/*单例模式实现
+var Singleton=function (name) {
+    this.name=name;
 };
 
-Function.prototype.apply.apply(add,[this,[1,2]]);
+Singleton.getInstance=(function () {
+    var instance=null;
+    return function (name) {
+        if(!instance){
+            instance=new Singleton(name);
+        }
+        return instance;
+    }
+})();
+
+var a=Singleton.getInstance('sven1');
+var b=Singleton.getInstance('sven2');
+
+console.log(a===b);
+    */
+/*透明的单例模式
+var CreateDiv=(function () {
+    var instance;
+
+    var CreateDiv=function (html) {
+        if(instance){
+            return instance;
+        }
+        this.html=html;
+        this.init();
+        return instance=this;
+    };
+
+    CreateDiv.prototype.init=function () {
+        console.log(1);
+    };
+    return CreateDiv;
+})();
+
+var a=new CreateDiv('sven1');
+var b=new CreateDiv('sven2');
+
+console.log(a===b);
+*/
+/*代理实现单例模式
+var CreateDiv=function (html) {
+    this.html=html;
+    this.init();
+};
+
+CreateDiv.prototype.init=function () {
+    console.log(1);
+};
+
+var ProxySingletonCreateDiv=(function () {
+    var instance;
+    return function (html) {
+        if(!instance){
+            instance=new CreateDiv(html);
+        }
+
+        return instance;
+    }
+})();
+
+var a=new ProxySingletonCreateDiv('sven1');
+var b=new ProxySingletonCreateDiv('sven2');
+
+console.log(a===b);
+ */
+/*动态创建命名空间
+var MyApp={};
+
+MyApp.namespace=function (name) {
+    var parts=name.split('.');
+    var current=MyApp;
+    for(var i in parts){
+        if(!current[parts[i]]){
+            current[parts[i]]={};
+        }
+        current=current[parts[i]];
+    }
+};
+    MyApp.namespace('event');
+    MyApp.namespace('dom.style');
+
+    console.log(MyApp);
+    */
+
+    var a={};
+    c=a;
+    c['b']={};
+    c=c['b'];
+    c['c']={};
+    c=c['c'];
+    console.log(a);
