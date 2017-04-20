@@ -360,7 +360,7 @@ MyApp.namespace=function (name) {
 
     console.log(MyApp);
     */
-
+/*对象动态赋值
     var a={};
     c=a;
     c['b']={};
@@ -368,3 +368,326 @@ MyApp.namespace=function (name) {
     c['c']={};
     c=c['c'];
     console.log(a);
+    */
+/*单例模式
+var getSingle=function (fn) {
+    var result;
+    return function () {
+        return result||(result=fn.apply(this,arguments));
+    }
+};
+*/
+/*代理延迟
+var Flower=function () {};
+var xiaoming={
+    sendFlower:function (target) {
+        var flower=new Flower();
+        target.receiveFlower(flower);
+    }
+};
+
+var B={
+    receiveFlower:function (flower) {
+        A.listenGoodMood(function () {
+            A.receiveFlower(flower);
+        });
+    }
+};
+
+var A={
+    receiveFlower:function (flower) {
+        console.log("receiveFlower " +flower);
+    },
+    listenGoodMood:function (fn) {
+        setTimeout(function () {
+            fn();
+        },10000);
+    }
+};
+
+xiaoming.sendFlower(B);
+
+*/
+/*代理缓存
+var mult=function () {
+    console.log('开始计算乘积');
+    var a=1;
+    for(var i=0,l=arguments.length;i<l;i++){
+        a=a*arguments[i];
+    }
+    return a;
+};
+mult(2,3);
+mult(2,3,4);
+
+var proxyMult=function (fn) {
+    var cache={};
+    return function () {
+        var args=Array.prototype.join.call(arguments,',');
+        if(args in cache){
+            return cache[args];
+        }
+        return cache[args]=fn.apply(this,arguments);
+    }
+};
+
+var proxyPlus=proxyMult(mult);
+proxyPlus(1,2,3,4);
+proxyPlus(1,2,3,4);
+    */
+/*
+var each=function (ary,callback) {
+    for(var i=0,l=ary.length;i<l;i++){
+        var value=callback.call(ary[i],i,ary[i]);
+        if(value===false) {
+            break;
+        }
+    }
+};
+
+var compare=function (ary1,ary2) {
+    if(ary1.length!==ary2.length){
+        console.log("ary1和ary2不相等");
+    }
+    each(ary1,function (i) {
+        if(ary1[i]!==ary2[i]){
+            console.log("ary1和ary2不相等");
+            return false;
+        }
+    });
+
+    console.log('相等');
+};
+
+compare([2,2,3],[1,2,4]);
+ */
+/* JQ each
+$.each=function (obj,callback) {
+    var value,
+        i=0,
+        length=obj.length,
+        isArray=isArraylike(obj);
+
+    if(isArray){
+        for(;i<length;i++){
+            value=callback.call(obj[i],i,obj[i]);
+
+            if(value===false){
+                break;
+            }
+        }
+    }else{
+        for(i in obj){
+            value=callback.call(obj[i],i,obj[i]);
+
+            if(value===false){
+                break;
+            }
+        }
+    }
+
+    return obj;
+};
+*/
+/*发布订阅模式
+var Event=(function () {
+    var clientList={},
+        listen,
+        trigger,
+        remover;
+
+    listen=function (key,fn) {
+        if(!clientList[key]){
+            clientList[key]=[];
+        }
+        clientList[key].push(fn);
+    };
+
+    trigger=function () {
+        var key = Array.prototype.shift.call(arguments),
+            fns = clientList[key];
+        if (!fns || fns.length === 0) {
+            return false;
+        }
+        for (var i = 0, fn; fn = fns[i++];) {
+            fn.apply(this, arguments);
+        }
+    };
+});
+*/
+/*组合模式
+    var Folder=function (name) {
+        this.name=name;
+        this.parent=null;
+        this.files=[];
+    };
+
+    Folder.prototype.add=function (file) {
+        file.parent=this;
+        this.files.push(file);
+    };
+
+    Folder.prototype.scan=function () {
+        console.log('开始扫描文件夹:'+this.name);
+        for(var i=0,file,files=this.files;file=files[i++];){
+            file.scan();
+        }
+
+    };
+
+    Folder.prototype.remove=function () {
+        if(!this.parent){
+            return;
+        }
+        for(var files=this.parent.files,l=files.length-1;l>=0;l--){
+            var file=files[l];
+            if(file===this){
+                files.splice(l,1);
+            }
+        }
+    };
+
+    var File=function (name) {
+        this.name=name;
+        this.parent=null;
+    };
+
+    File.prototype.add=function () {
+        throw new Error('不能添加在文件下面');
+    };
+
+    File.prototype.scan=function () {
+        console.log('开始扫描文件：'+this.name);
+    };
+
+    File.prototype.remove=function () {
+        if(!this.parent){
+            return ;
+        }
+        for(var files=this.parent.files,l=files.length-1;l>=0;l--){
+            var file=files[l];
+            if(file===this){
+                files.splice(l,1);
+            }
+        }
+    };
+
+*/
+/*
+var Beverage=function () {};
+
+Beverage.prototype.boilWater=function () {
+    console.log('把水煮沸');
+};
+
+Beverage.prototype.brew=function () {};
+
+Beverage.prototype.pourInCup=function(){};
+
+Beverage.prototype.addCondiments=function () {};
+
+Beverage.prototype.init=function(){
+    this.boilWater();
+    this.brew();
+    this.pourInCup();
+    this.addCondiments();
+};
+
+var Coffee=function () {};
+
+Coffee.prototype=new Beverage();
+
+Coffee.prototype.brew=function () {
+    console.log('用沸水冲泡咖啡');
+};
+
+Coffee.prototype.pourInCup=function () {
+    console.log('把咖啡倒进杯子');
+};
+
+Coffee.prototype.addCondiments=function () {
+    console.log('加糖和牛奶');
+};
+
+var Coffee=new Coffee();
+Coffee.init();
+*/
+/*AOP 职责链模式
+Function.prototype.after=function (fn) {
+    var self=this;
+    return function () {
+        var ret=self.apply(this,arguments);
+        if(ret==='nextSuccessor'){
+            return fn.apply(this,arguments);
+        }
+
+        return ret;
+    }
+}
+
+*/
+/*AOP装饰函数
+Function.prototype.before=function (beforefn) {
+    var __self=this;
+    return function () {
+        beforefn.apply(this,arguments);
+
+        return __self.apply(this,arguments);
+    }
+};
+
+Function.prototype.after=function (afterfn) {
+    var __self=this;
+    return function () {
+        var ret=__self.apply(this,arguments);
+        afterfn.apply(this,arguments);
+
+        return ret;
+    }
+};
+
+var func=function () {
+    console.log(1);
+};
+
+func.a='a';
+console.log(func.a);
+
+func=func.after(function () {
+    console.log(2);
+});
+
+console.log(func.a);
+    */
+/*状态模式
+
+var StateFactory=(function () {
+
+    var State=function () {
+
+    };
+
+    State.prototype.clickHandler1=function () {
+        throw new Error('子类必须重写父类的clickHander1方法');
+    };
+
+    State.prototype.clickHandler2=function () {
+        throw new Error('子类必须重写父类的clickHandler2方法');
+    };
+
+    return function (param) {
+
+        var F=function (uploadObj) {
+            this.uploadObj=uploadObj;
+        };
+
+        F.prototype=new State();
+
+        for(var i in param){
+            F.prototype[i]=param[i];
+        }
+
+        return F;
+    }
+})();
+    */
